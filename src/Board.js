@@ -82,8 +82,6 @@
       var matrix = this.rows();
       var oneCount = 0;
 
-      console.log(this.attributes, this.rows())
-
       for (var i = 0; i < matrix[rowIndex].length; i++) {
         if (matrix[rowIndex][i] === 1) {
           oneCount++;
@@ -146,35 +144,41 @@
 
     // Major Diagonals - go from top-left to bottom-right
     // --------------------------------------------------------------
-    //
-    // test if a specific major diagonal on this board contains a conflict
+
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
       var matrix = this.rows();
       var oneCount = 0;
 
 
       for (var i = 0; i < matrix.length; i++) {
+        oneCount = 0;
+        var row = i;
+        var column = majorDiagonalColumnIndexAtFirstRow;
+        while (column < matrix.length && row < matrix.length) {
+          oneCount += matrix[row][column];
+          row++;
+          column++;
+        }
+
+        if (oneCount > 1) {
+          return true;
+        }
       }
-      if (oneCount > 1) {
-        return true;
-      } else {
-        return false;
-      }
+      return false;
+
     },
 
-    // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
       var matrix = this.rows();
 
 
-      for (var i = 0; i < matrix.length; i++) {
+      for (var i = 0; i < matrix.length - 1; i++) {
         if (this.hasMajorDiagonalConflictAt(i)) {
           return true;
         }
       }
       return false;
     },
-
 
 
     // Minor Diagonals - go from top-right to bottom-left
@@ -184,25 +188,28 @@
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
       var matrix = this.rows();
       var oneCount = 0;
+
       for (var i = 0; i < matrix.length; i++) {
-        for (var j = matrix.length - 1; j >= minorDiagonalColumnIndexAtFirstRow; j--) {
-          if (matrix[i][j] === 1) {
-            oneCount++;
-          }
+        oneCount = 0;
+        var row = i;
+        var col = minorDiagonalColumnIndexAtFirstRow;
+        while (row < matrix.length && col >= 0) {
+          oneCount += matrix[row][col];
+          row++;
+          col--;
         }
-      }
-      if (oneCount > 1) {
-        return true;
-      } else {
-        return false;
+
+        if (oneCount > 1) {
+          return true;
+        }
       }
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
-      var matrix = this.rows();
+      let matrix = this.rows();
 
-      for (var i = 0; i < matrix.length; i++) {
+      for (let i = matrix.length - 1; i >= 0; i--) {
         if (this.hasMinorDiagonalConflictAt(i)) {
           return true;
         }

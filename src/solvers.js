@@ -16,9 +16,27 @@
 
 
 window.findNRooksSolution = function(n) {
-  var solution = undefined; //fixme
+  var board = new Board({n: n});
 
-  console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
+  const iterator = function(n, row) {
+    if (row === n) {
+      return;
+    }
+    for (var col = 0; col < n; col++) {
+      board.togglePiece(row, col);
+      if (board.hasAnyRooksConflicts()) {
+        board.togglePiece(row, col);
+      } else {
+        iterator(n, row + 1);
+      }
+    }
+  };
+
+  iterator(n, 0);
+
+  var solution = board.rows();
+
+  //console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
   return solution;
 };
 
@@ -43,6 +61,7 @@ window.countNRooksSolutions = function(n) {
     }
   };
   iterator(n, 0);
+
   // for (var i = n; i > 0; i--) {
   //   solutionCount *= i;
   // }
@@ -53,8 +72,36 @@ window.countNRooksSolutions = function(n) {
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
+  var board = new Board({n: n});
+  var solutionFound = false;
+  const iterator = function(n, row) {
+    if (row === n) {
+      var numPieces = _.reduce(board.rows(), function(memo, row) {
+        return memo + _.reduce(row, function(memo, col) {
+          return memo + col;
+        }, 0);
+      }, 0);
+      if (numPieces === n) {
+        solutionFound = true;
+      }
+      return;
+    }
+    for (var col = 0; col < n; col++) {
+      board.togglePiece(row, col);
+      if (board.hasAnyQueensConflicts()) {
+        board.togglePiece(row, col);
+      } else {
+        iterator(n, row + 1);
+        if (solutionFound === true) {
+          return board.rows();
+        }
+        board.togglePiece(row, col);
+      }
+    }
+  };
 
+  iterator(n, 0);
+  solution = board.rows();
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
   return solution;
 };
